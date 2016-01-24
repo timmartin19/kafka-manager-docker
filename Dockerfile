@@ -25,8 +25,13 @@ RUN mkdir -p /tmp && \
     cd /tmp && \
     git clone https://github.com/yahoo/kafka-manager && \
     cd /tmp/kafka-manager && \
-    git checkout ${KM_REVISION} && \
-    ./sbt clean dist && \
+    git checkout ${KM_REVISION}
+
+# Necessary to compile scala in Docker
+RUN echo 'scalacOptions ++= Seq("-Xmax-classfile-name", "200")' >> ./build.sbt
+
+# Build Kafka manager
+RUN ./sbt clean dist && \
     unzip  -d / ./target/universal/kafka-manager-${KM_VERSION}.zip && \
     rm -fr /tmp/* /root/.sbt /root/.ivy2
 
